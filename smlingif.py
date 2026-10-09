@@ -278,7 +278,7 @@ if __name__ == "__main__":
 
     save_gif(
         traj,
-        gif_path="Cube_beta_0.1.gif",
+        gif_path="Cube_beta_0.9.gif",
         fps=60,
         every=1,
         figsize=(8, 8),
