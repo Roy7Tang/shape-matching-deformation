@@ -344,7 +344,7 @@ if __name__ == "__main__":
 
     save_gif(
         traj,
-        gif_path="Cubefalllin.gif",
+        gif_path="Cubefallpbd.gif",
         fps=60,
         every=5,
         figsize=(8, 8),
