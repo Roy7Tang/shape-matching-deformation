@@ -27,7 +27,7 @@ The simulation workflow consists of:
 
 ## Repository Structure
 
-```text
+```
 .
 ├── smlingif.py     # Shape recovery simulation
 ├── smfallgif.py       # Falling cube using shape matching
@@ -35,6 +35,7 @@ The simulation workflow consists of:
 ├── README.md
 ├── Cubefallrig.gif    # Generated GIF animations
 └── Cubefallpbd.gif               
+
 ```
 
 Each Python script can be executed independently.
@@ -43,65 +44,63 @@ Each Python script can be executed independently.
 
 Shape matching estimates a transformation between the reference configuration and the current particle positions.
 
-Let $\mathbf{q}_i$ and \(\mathbf{x}_i\) denote the reference and current positions of particle \(i\), respectively.
+Let $\mathbf{q}_i$ and $\mathbf{x}_i$ denote the reference and current positions of particle $i$, respectively.
 
 ### Center of Mass
 
 The mass-weighted centers of mass are computed as
 
-$$
+```math
 \mathbf{t}_0=\frac{\sum_i m_i\mathbf{q}_i}{\sum_i m_i}
-$$
+```
 
-\[
+```math
 \mathbf{t}=\frac{\sum_i m_i\mathbf{x}_i}{\sum_i m_i}
-\]
+```
 
 The centered particle positions are then used to construct the covariance matrices:
 
-\[
+```math
 A_{pq}=\sum_i m_i(\mathbf{x}_i-\mathbf{t})(\mathbf{q}_i-\mathbf{t}_0)^T
-\]
+```
 
-\[
+```math
 A_{qq}=\sum_i m_i(\mathbf{q}_i-\mathbf{t}_0)(\mathbf{q}_i-\mathbf{t}_0)^T
-\]
+```
 
 ### Rotation and Linear Transformation
 
 The optimal rotational transformation is computed using polar decomposition:
 
-\[
+```math
 R=A_{pq}(A_{pq}^TA_{pq})^{-1/2}
-\]
+```
 
 The implementation uses a Jacobi eigenvalue decomposition to compute the symmetric matrix square root, together with the Moore–Penrose pseudoinverse for numerical handling of singular matrices.
 
 The linear transformation is calculated as
 
-\[
+```math
 A=A_{pq}A_{qq}^{+}
-\]
+```
 
-where \(A_{qq}^{+}\) denotes the Moore–Penrose pseudoinverse.
+where $A_{qq}^{+}$ denotes the Moore–Penrose pseudoinverse.
 
 ### Target Positions
 
 The target positions are calculated as
 
-\[
-\mathbf{g}_i=
-\left[\beta A+(1-\beta)R\right]
-(\mathbf{q}_i-\mathbf{t}_0)+\mathbf{t}
-\]
+```math
+\mathbf{g}_i= \left[\beta A+(1-\beta)R\right] (\mathbf{q}_i-\mathbf{t}_0)+\mathbf{t}
+```
 
 where:
 
-- \(R\): rotational transformation;
-- \(A\): linear transformation;
-- \(\beta\): blending parameter between rotational and linear shape matching.
+- $R$: rotational transformation;
+- $A$: linear transformation;
+- $\beta$: blending parameter between rotational and linear shape matching.
 
-For \(\beta=0\), the target transformation is purely rotational. Increasing \(\beta\) introduces a greater contribution from the linear transformation.
+For $\beta=0$, the target transformation is purely rotational. Increasing $\beta$ introduces a greater contribution from the linear transformation.
 
 ## Simulation Methods
 
@@ -115,22 +114,19 @@ No external forces are applied. The particles evolve under shape-matching correc
 
 The velocity and position updates are
 
-\[
-\mathbf{v}_i^{n+1}
-=d\left[\mathbf{v}_i^n+
-\frac{\alpha}{h}(\mathbf{g}_i-\mathbf{x}_i^n)\right]
-\]
+```math
+\mathbf{v}_i^{n+1} =d\left[\mathbf{v}_i^n+ \frac{\alpha}{h}(\mathbf{g}_i-\mathbf{x}_i^n)\right]
+```
 
-\[
-\mathbf{x}_i^{n+1}=
-\mathbf{x}_i^n+h\mathbf{v}_i^{n+1}
-\]
+```math
+\mathbf{x}_i^{n+1}= \mathbf{x}_i^n+h\mathbf{v}_i^{n+1}
+```
 
-where \(h\) is the time step, \(\alpha\) is the correction coefficient, and \(d\) is the velocity damping factor.
+where $h$ is the time step, $\alpha$ is the correction coefficient, and $d$ is the velocity damping factor.
 
 Default parameters:
 
-```python
+```
 h = 1 / 500
 alpha = 0.9
 beta = 0.9
@@ -140,7 +136,7 @@ damping = 0.99
 
 The initial displacement of the selected corner particle is
 
-```python
+```
 x[7] += np.array([0.1, 0.1, 0.1])
 ```
 
@@ -154,22 +150,17 @@ The simulation includes gravity, shape-matching corrections, velocity damping, a
 
 The particle velocities are updated using
 
-\[
-\mathbf{v}_i^{n+1}
-=d\left[
-\mathbf{v}_i^n+
-\frac{\alpha}{h}(\mathbf{g}_i-\mathbf{x}_i^n)
-+h\mathbf{a}_i
-\right]
-\]
+```math
+\mathbf{v}_i^{n+1} =d\left[ \mathbf{v}_i^n+ \frac{\alpha}{h}(\mathbf{g}_i-\mathbf{x}_i^n) +h\mathbf{a}_i \right]
+```
 
 followed by position integration.
 
-Ground collision is handled by projecting particles below the ground plane back to \(z=0\) and preventing downward velocity for particles in contact.
+Ground collision is handled by projecting particles below the ground plane back to $z=0$ and preventing downward velocity for particles in contact.
 
 Default parameters:
 
-```python
+```
 h = 1 / 300
 alpha = 1.0
 beta = 0.0
@@ -178,7 +169,7 @@ damping = 0.995
 gravity = [0, 0, -9.8]
 ```
 
-With \(\beta=0\), this simulation uses rotational shape-matching targets.
+With $\beta=0$, this simulation uses rotational shape-matching targets.
 
 ### 3. Falling Cube Using Position-Based Dynamics
 
@@ -189,7 +180,7 @@ This simulation uses a position-based approach to update particle positions unde
 At each time step:
 
 1. Particle velocities and positions are predicted under gravity.
-2. Particles penetrating the ground plane are projected back to \(z=0\).
+2. Particles penetrating the ground plane are projected back to $z=0$.
 3. Shape-matching target positions are calculated.
 4. Particle positions are corrected toward the target configuration.
 5. Constraint projection is repeated for a fixed number of iterations.
@@ -197,14 +188,13 @@ At each time step:
 
 The shape-matching position correction is
 
-\[
-\mathbf{x}_i\leftarrow
-\mathbf{x}_i+\alpha(\mathbf{g}_i-\mathbf{x}_i)
-\]
+```math
+\mathbf{x}_i\leftarrow \mathbf{x}_i+\alpha(\mathbf{g}_i-\mathbf{x}_i)
+```
 
 Default parameters:
 
-```python
+```
 h = 1 / 300
 alpha = 0.5
 beta = 0.5
@@ -226,19 +216,11 @@ An optimal proper rotation is estimated using singular value decomposition (SVD)
 
 The deformation metric is
 
-\[
-D(t)=
-\sqrt{
-\frac{1}{N}
-\sum_{i=1}^{N}
-\left\|
-(\mathbf{x}_i-\mathbf{t})-
-R(\mathbf{q}_i-\mathbf{t}_0)
-\right\|^2
-}
-\]
+```math
+D(t)= \sqrt{ \frac{1}{N} \sum_{i=1}^{N} \left\| (\mathbf{x}_i-\mathbf{t})- R(\mathbf{q}_i-\mathbf{t}_0) \right\|^2 }
+```
 
-where \(N\) is the number of particles.
+where $N$ is the number of particles.
 
 This metric measures the deviation from the reference configuration independently of rigid-body translation and rotation.
 
@@ -252,21 +234,21 @@ Unable to upload due to file size limit
 
 ### Falling Cube — Shape Matching
 
-![Falling Cube Shape Matching](Cubefallrig.gif)
+
 
 ### Falling Cube — PBD
 
-![Falling Cube PBD](Cubefallpbd.gif)
+
 
 ### Deformation Curves
 
-The scripts generate deformation plots showing the evolution of \(D(t)\) over simulation steps.
+The scripts generate deformation plots showing the evolution of $D(t)$ over simulation steps.
 
-| Simulation | Output file |
-|---|---|
-| Shape Recovery | `bdc09.png` |
-| Falling Cube — Shape Matching | `Dsmfall.png` |
-| Falling Cube — PBD | `Dpbdfall.png` |
+| **Simulation**                | **Output file** |
+| ----------------------------- | --------------- |
+| Shape Recovery                | `bdc09.png`     |
+| Falling Cube — Shape Matching | `Dsmfall.png`   |
+| Falling Cube — PBD            | `Dpbdfall.png`  |
 
 These plots can be used to examine deformation recovery and residual deformation during the simulations.
 
@@ -279,7 +261,7 @@ These plots can be used to examine deformation recovery and residual deformation
 
 Install the dependencies with:
 
-```bash
+```
 pip install numpy matplotlib pillow
 ```
 
@@ -287,7 +269,7 @@ pip install numpy matplotlib pillow
 
 ### Run Shape Recovery
 
-```bash
+```
 python "smlingif.py"
 ```
 
@@ -298,7 +280,7 @@ Generates:
 
 ### Run Falling Cube with Shape Matching
 
-```bash
+```
 python smfallgif.py
 ```
 
@@ -309,7 +291,7 @@ Generates:
 
 ### Run Falling Cube with PBD
 
-```bash
+```
 python pbdfallgif.py
 ```
 
@@ -322,20 +304,20 @@ The animation and plot files are saved in the current working directory.
 
 ## Model Parameters
 
-| Parameter | Description |
-|---|---|
-| `h` | Simulation time step |
-| `alpha` | Shape-matching correction strength |
-| `beta` | Blending coefficient between rotational and linear transformations |
-| `damping` | Velocity damping factor |
-| `steps` | Total number of simulation steps |
-| `pbd_iters` | Number of constraint projection iterations in PBD |
-| `g_vec` | Gravitational acceleration vector |
+| **Parameter** | **Description**                                                    |
+| ------------- | ------------------------------------------------------------------ |
+| `h`           | Simulation time step                                               |
+| `alpha`       | Shape-matching correction strength                                 |
+| `beta`        | Blending coefficient between rotational and linear transformations |
+| `damping`     | Velocity damping factor                                            |
+| `steps`       | Total number of simulation steps                                   |
+| `pbd_iters`   | Number of constraint projection iterations in PBD                  |
+| `g_vec`       | Gravitational acceleration vector                                  |
 
 ## Notes
 
 - All particles are assigned equal masses.
-- Ground collision is modeled using a horizontal plane at \(z=0\).
+- Ground collision is modeled using a horizontal plane at $z=0$.
 - The cube is represented by discrete particles and edges rather than a volumetric finite-element mesh.
 - Shape matching uses a custom Jacobi eigenvalue decomposition for the polar decomposition calculation.
 - The simulations use fixed time steps and manually selected parameters.
@@ -347,14 +329,14 @@ This project was developed as part of my master's thesis research on the numeric
 
 ## References
 
-[1] M. Müller, B. Heidelberger, M. Teschner, and M. Gross,  
-“Meshless deformations based on shape matching,”  
-*ACM Transactions on Graphics*, vol. 24, no. 3, pp. 471–478, 2005.  
+[1] M. Müller, B. Heidelberger, M. Teschner, and M. Gross,\
+“Meshless deformations based on shape matching,”\
+*ACM Transactions on Graphics*, vol. 24, no. 3, pp. 471–478, 2005.\
 DOI: [10.1145/1073204.1073216](https://doi.org/10.1145/1073204.1073216)
 
-[2] M. Müller, B. Heidelberger, M. Hennix, and J. Ratcliff,  
-“Position based dynamics,”  
-*Journal of Visual Communication and Image Representation*, vol. 18, no. 2, pp. 109–118, 2007.  
+[2] M. Müller, B. Heidelberger, M. Hennix, and J. Ratcliff,\
+“Position based dynamics,”\
+*Journal of Visual Communication and Image Representation*, vol. 18, no. 2, pp. 109–118, 2007.\
 DOI: [10.1016/j.jvcir.2007.01.005](https://doi.org/10.1016/j.jvcir.2007.01.005)
 
 ## License
