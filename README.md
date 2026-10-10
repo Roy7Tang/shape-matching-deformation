@@ -43,15 +43,15 @@ Each Python script can be executed independently.
 
 Shape matching estimates a transformation between the reference configuration and the current particle positions.
 
-Let \(\mathbf{q}_i\) and \(\mathbf{x}_i\) denote the reference and current positions of particle \(i\), respectively.
+Let $\mathbf{q}_i$ and \(\mathbf{x}_i\) denote the reference and current positions of particle \(i\), respectively.
 
 ### Center of Mass
 
 The mass-weighted centers of mass are computed as
 
-\[
+$$
 \mathbf{t}_0=\frac{\sum_i m_i\mathbf{q}_i}{\sum_i m_i}
-\]
+$$
 
 \[
 \mathbf{t}=\frac{\sum_i m_i\mathbf{x}_i}{\sum_i m_i}
