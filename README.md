@@ -226,32 +226,6 @@ This metric measures the deviation from the reference configuration independentl
 
 A value of zero indicates that the current configuration matches the reference shape up to a proper rigid transformation.
 
-## Simulation Results
-
-### Shape Recovery
-
-Unable to upload due to file size limit
-
-### Falling Cube — Shape Matching
-
-
-
-### Falling Cube — PBD
-
-
-
-### Deformation Curves
-
-The scripts generate deformation plots showing the evolution of $D(t)$ over simulation steps.
-
-| **Simulation**                | **Output file** |
-| ----------------------------- | --------------- |
-| Shape Recovery                | `bdc09.png`     |
-| Falling Cube — Shape Matching | `Dsmfall.png`   |
-| Falling Cube — PBD            | `Dpbdfall.png`  |
-
-These plots can be used to examine deformation recovery and residual deformation during the simulations.
-
 ## Requirements
 
 - Python 3
